@@ -1,7 +1,11 @@
 
+const home = "localhost";
+const cr = "192.168.59.223"
+const IP = home;
+
 var conObj = {
     http : {
-        hostname : "192.168.59.223",
+        hostname : IP,
         port : 3000
     },
     db : {
@@ -10,7 +14,7 @@ var conObj = {
         dbname : "superClass"
     },
     socket : {
-        connect : "192.168.59.223",
+        connect : IP,
         port : 8000
     }
 }
