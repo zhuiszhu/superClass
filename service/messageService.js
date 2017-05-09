@@ -1,4 +1,4 @@
-var db = require("../db/teacherDB");
+var db = require("../db/DBconnect.js");
 var event = require("../functions/publicEvent");
 var getSocketUser = require("../service/socketService");
 

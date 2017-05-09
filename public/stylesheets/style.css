@@ -48,6 +48,14 @@ header{
 .login-module .form-row select:focus{
   outline: none;
 }
+.login-module .form-row label{
+  line-height: 20px;
+  cursor: pointer;
+  user-select: none;
+}
+.login-module .form-row label input{
+  line-height: 20px;
+}
 .login-module .form-btn{
   height: 35px;
   width: 110px;
@@ -59,6 +67,10 @@ header{
   cursor: pointer;
   margin-top: 10px;
   padding:0;
+  text-align: center;
+}
+.login-module .form-btn.minor{
+  background: #ccc;
 }
 .login-module .form-module .info:empty{
   margin-bottom: 0;

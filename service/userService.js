@@ -1,11 +1,10 @@
-var DB = require("../db/teacherDB");
+var DB = require("../db/DBconnect.js");
 var db = new DB("users");
 var event = require("../functions/publicEvent");
 var jm = require("../functions/ecryption").pwd;
 
 var userService = {
     indexPage: (req , res) => {
-        console.log(req.session.userObj);
         if(req.session.userObj && req.session.userObj[0].type == 0){
             res.redirect("/teacher");
         }else if(req.session.userObj && req.session.userObj[0].type == 1){

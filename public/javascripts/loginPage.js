@@ -3,10 +3,25 @@
         userObj = {},//用户信息
         usernameDom = $("#username"),//username模块Dom
         passwordDom = $("#password"),//password模块Dom
+        rememberDom = loginModule[0].remp,
         aut = {
             username: false,
             password: false
         };
+    var remState = localStorage.getItem("remember");
+    var userData = localStorage.getItem("userData");
+
+    if(remState == "1"){
+        rememberDom.checked = true;
+    }else{
+        rememberDom.checked = false;        
+    }
+
+    if(userData){
+        var userObj = JSON.parse(userData);
+        usernameDom.find("input").val(userObj.username);
+        passwordDom.find("input").val(userObj.password);
+    }
 
     //注册提交事件
     loginModule.on("submit" , function(e){
@@ -23,7 +38,27 @@
                 data : userObj,
                 type : "post",
                 success : function(data){
-                    location.href = "/";
+                    console.log(data);
+
+                    if(data.aut){
+                        if(rememberDom.checked){
+                            localStorage.setItem("remember" , "1");
+                            localStorage.setItem("userData" , JSON.stringify(userObj));
+                        }else{
+                            localStorage.setItem("remember" , "0");
+                            localStorage.removeItem("userData");                            
+                        }
+                        location.href = "/";
+                    }else{
+                        alert(data.txt);
+                        usernameDom.find("input").val("");
+                        passwordDom.find("input").val("");
+                        usernameDom.removeClass("suc");                        
+                        usernameDom.removeClass("err");  
+                        passwordDom.removeClass("suc");                    
+                        passwordDom.removeClass("err");                    
+                    }
+
                 }
             })
         }

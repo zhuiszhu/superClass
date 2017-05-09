@@ -1,4 +1,5 @@
-var db = require("../db/teacherDB");
+var DBCon = require("../db/DBconnect.js");
+var db = new DBCon("users");
 var event = require("../functions/publicEvent");
 var getSocketUser = require("../service/socketService");
 
@@ -7,7 +8,32 @@ var classService = {
         if (req.session.userObj && req.session.userObj[0].type == 0) {
             //向socket服务器传送session用户信息
             getSocketUser(req.session.userObj[0]);
-            res.send("教师页面");
+            var userObj = req.session.userObj[0];
+            
+            event.removeAllListeners("DB_OOP_SUCCESS");
+            event.once("DB_OOP_SUCCESS", data => {
+                var usr = data.info;
+                console.log(usr);
+                /*
+                if (usr.length == 0) {//用户名密码不正确
+                    sendObj.txt = "用户名密码不正确,请重新输入";
+                } else {
+                    sendObj.txt = "恭喜您登录成功!"
+                    sendObj.aut = true;
+                    sendObj.userType = usr[0].type;
+                    req.session.userObj = usr;
+                }*/
+                res.render("index" , {
+                    page : "teacherPage",
+                    title : `超级课堂--${userObj.username}`,
+                    stuList : usr,
+                    userObj : userObj
+                });
+            });
+
+            db.find({type : "1" , class : userObj.class},{password : 0});
+            
+            // res.send("教师页面");
             /*
             res.render("index", {
                 page: "messagePage",
