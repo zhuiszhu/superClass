@@ -14,6 +14,18 @@
             type: 0,
             vCode: true
         }
+    //初始化班级列表
+    $.ajax({
+        url : "/ajax/users/findClass",
+        type : "get",
+        success : function(data){
+            console.log(data);
+            data.map(function(item){
+                var oDom = $("<option value='"+item.class+"'>"+item.class+"</option>");
+                $("#stuClass").find("select").append(oDom);
+            })
+        }
+    })
 
     //注册提交事件
     loginModule.on("submit", function (e) {
@@ -26,17 +38,18 @@
         if (isAut) {
             userObj.username = usernameDom.find("input").val();
             userObj.password = passwordDom.find("input").val();
-            userObj.class = classDom.find("input").val();
             userObj.type = type;
-            if(type == 0){//若是讲师注册,则提交邀请码
+            if(type == 0){//若是讲师注册,则提交邀请码,并从输入框中获取class
                 userObj.vCode = vCodeDom.find("input").val();
+                userObj.class = classDom.find("input").val();
+            }else{//若是学生注册,则从选择框中获取class
+                userObj.class = loginModule[0].stuClass.value;
+                console.log(userObj.class);
             }
 
-            console.log(userObj);
-            return ;
             //提交用户信息
             $.ajax({
-                url: "/ajax/zhuiszhu",
+                url: "/ajax/users/register",
                 data: userObj,
                 type: "post",
                 success: function (data) {
@@ -57,8 +70,12 @@
         var type = loginModule[0].type.value;
         if(type == 0){
             $("#vCode").show();
+            $("#class").show();
+            $("#stuClass").hide();
         }else{
             $("#vCode").hide();
+            $("#class").hide();            
+            $("#stuClass").show();            
         }
     });
 

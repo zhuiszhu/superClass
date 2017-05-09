@@ -49,7 +49,7 @@ var userService = {
             db.find(userObj);
         }
     },
-    registerPage: (req, res) => {//登录页面
+    registerPage: (req, res) => {//注册页面
         res.render("index", {
             page: "registerPage",
             title: "message-注册页面"
@@ -69,14 +69,17 @@ var userService = {
             aut: false
         }
         userObj.username = userObj.username.trim();
+        userObj.class = userObj.class.trim();       
 
         //验证数据是否合法
         if (!testName(userObj.username)) {
             sendObj.txt = "用户名不合法";
         } else if (!testPwd(userObj.username)) {
             sendObj.txt = "密码不合法";
-        } else if (!testEmail(userObj.email)) {
-            sendObj.txt = "邮箱不合法";
+        } else if (!testClass(userObj.class)) {
+            sendObj.txt = "班级名称不合法";
+        } else if (userObj.type == 0 && userObj.vCode != "thisiszhu") {
+            sendObj.txt = "邀请码错误";
         } else {
             sendObj.aut = true;
         }
@@ -210,6 +213,19 @@ var userService = {
             db.find({ username: username });
         }
 
+    },
+    findClass: (req , res) => {//查询班级
+        event.emit("GET_RES", res);
+
+        event.removeAllListeners("DB_OOP_SUCCESS");
+            event.on("DB_OOP_SUCCESS", data => {//查询成功
+                
+                console.log(data);
+
+                res.json(data.info);
+            });
+
+            db.find({ type: 0 },{class:1 , _id : 0});
     }
 };
 
@@ -238,7 +254,8 @@ var testEmail = eml => {
 }
 
 /**
- * 验证班级是否合法
+ * 验证班级名是否合法
+ * @param {string} className 班级名称
  */
 var testClass = className => {
     var zz = /\w{4,20}/;

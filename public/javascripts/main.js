@@ -50,11 +50,11 @@ var testVCode = function(name) {
 var testAll = function(forDom){
     var isAut = true;
     var pwdVal = "";
+    var type = $(".form-js-module").closest("form")[0].type.value;
 
-    forDom.find(".form-module").each(function(){
+    forDom.find(".form-js-module").each(function(){
         var did = $(this).attr("id");
         var inVal = $(this).find("input").val();
-
         switch(did){
             case "username"://验证用户名
                 if(!testName(inVal)){
@@ -83,13 +83,13 @@ var testAll = function(forDom){
                 }
                 break;
             case "class"://验证班级
-                if(!testClass(inVal)){
+                if(type == 0 && !testClass(inVal)){
                     isAut = false;
                     oopM($(this), "班级名格式不正确");                                        
                 }
                 break;
             case "vCode"://讲师注册邀请码
-                var type = $(this).closest("form")[0].type.value;
+                
                 if(type == 0 && !testVCode(inVal)){//讲师注册
                     isAut = false;
                     oopM($(this), "注册邀请码格式不正确");                    

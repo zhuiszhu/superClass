@@ -19,9 +19,9 @@ router.post('/users/findUser' , (req , res , next) => {
   userService.findUser(req , res);
 })
 
-//讲师注册
-router.post('/admin' , (req , res , next) => {
-  userService.adminRegister(req , res);
+//查询可用班级数
+router.get('/users/findClass' , (req , res , next) => {
+  userService.findClass(req , res);
 })
 
 
