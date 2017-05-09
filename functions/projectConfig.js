@@ -10,7 +10,7 @@ var conObj = {
         dbname : "superClass"
     },
     socket : {
-        connect : "localhost",
+        connect : "192.168.59.223",
         port : 8000
     }
 }

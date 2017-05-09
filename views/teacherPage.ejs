@@ -1,10 +1,16 @@
 <header>超级课堂--<%= userObj.username%></header>
-<div class="message-panel">
-    <h2>学员列表</h2>
-    <br />
-    <ul>
-        <% stuList.map(function(item){%>
-            <li><%= item.username %></li>
-        <%}) %>
-    </ul>
+<div class="message-panel teacher">
+    <div class="class-info">
+        <h3><%= userObj.class%></h3>
+        <p>班级人数:<span><%= stuList.length%></span></p>
+        <p>上线人数:<span id="inlineNum">0</span></p>
+        <p>本场最佳:<span id="mvp">XXX</span></p>
+    </div>
+    <div class="student-list">
+        <ul>
+            <% stuList.map(function(item){%>
+                <li><%= item.username %></li>
+            <%}) %>
+        </ul>
+    </div>
 </div>

@@ -1,5 +1,5 @@
 $(function () {
-    var ws = new WebSocket("ws://localhost:8000");
+    var ws = new WebSocket("ws://192.168.59.223:8000");
     var sktObj = {
         type: "CONNECT",
         code: 200
@@ -21,10 +21,10 @@ $(function () {
                 $("#userNumber").text(dataObj.content);
                 break;
             case "USER_LIST":
-                updateUserList(dataObj.content);//更新用户列表
+                // updateUserList(dataObj.content);//更新用户列表
                 break;
             case "MESSAGE":
-                receiveInfo(dataObj);
+                // receiveInfo(dataObj);
                 break;
         }
 
