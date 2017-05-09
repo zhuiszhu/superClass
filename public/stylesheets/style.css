@@ -1,0 +1,256 @@
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+header{
+  margin : 20px auto;
+  width: 900px;
+  height: 50px;
+  font:18px/50px microsoft yahei;
+  color: #666;
+  background: #ffe0b5;
+  text-align: center;
+}
+.login-module{
+  width: 500px;
+  margin:15px auto;
+  padding: 25px;
+  box-sizing: border-box;
+  border:1px dashed #ccc;
+  text-align: right;
+}
+.login-module .form-module{
+  padding:10px 0;
+}
+.login-module .form-row{
+  display: flex;
+}
+
+.login-module .form-row span{
+  display: block;
+  text-align: right;
+  line-height: 45px;
+  padding-right: 20px;
+  width: 110px;
+}
+.login-module .form-row input[type=text],
+.login-module .form-row input[type=email],
+.login-module .form-row input[type=password]{
+  display: block;
+  flex: 6;
+  line-height: 45px;
+  padding:0 15px;
+  border-radius: 5px;
+  border:1px solid #ccc;
+}
+.login-module .form-btn{
+  height: 35px;
+  width: 110px;
+  display: inline-block;
+  border:0 none;
+  background:#04b7f1;
+  color: #fff;
+  line-height: 35px;
+  cursor: pointer;
+  margin-top: 10px;
+  padding:0;
+}
+.login-module .form-module .info:empty{
+  margin-bottom: 0;
+}
+.login-module .form-module .info{
+  line-height: 36px;
+  text-align: left;
+  padding-left: 130px;
+  margin-bottom: -10px;
+}
+.login-module .form-module.suc .info{
+  color: #35cc61;
+}
+.login-module .form-module.suc input{
+  border-color: #35cc61;
+}
+.login-module .form-module.err input{
+  border-color: #c33232;
+}
+.login-module .form-module.err .info{
+  color: #c33232;
+}
+.message-panel{
+  width: 800px;
+  margin: 20px auto;
+  display: flex;
+}
+.message-panel .message-function{
+  background: rgba(4,102,204,0.5);
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.75);
+  border-radius: 5px;
+  width: 500px;
+  padding:15px;
+  margin-right: 15px;
+}
+
+.message-panel .message-box{
+  width: 100%;
+  height: 300px;
+  background: #fff;
+  border-radius: 5px;
+  margin-bottom:15px;
+  padding:15px;
+  box-sizing: border-box;
+  box-shadow: inset 1px 1px 4px rgba(0,0,0,0.5);
+  overflow-y: auto;
+}
+.message-panel .message-box p{
+  margin:10px 0;
+}
+.message-panel .message-box p:after{
+  content: "";
+  display: block;
+  clear: both;
+}
+.message-panel .message-box p.isMe{
+  text-align: right;
+}
+.message-panel .message-box p.isMe .sender{
+  color: #34d8a7;
+  float: right;
+}
+.message-panel .message-box p.isMe .message{
+  float: right;
+  text-align: left;
+}
+.message-panel .message-box .sender{
+  color: #4d9cef;
+  float: left;
+}
+.message-panel .message-box .message{
+  word-break: break-all;
+  margin:0 15px;
+  color: #666;
+  display: inline-block;
+  max-width: 310px;
+}
+
+.message-panel .message-function textarea{
+  width: 100%;
+  resize: none;
+  font:18px/30px microsoft YaHei;
+  color: #666;
+  padding:5px 15px;
+  box-sizing: border-box;
+  border:0 none;
+  border-radius: 5px;
+  box-shadow: inset 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+.message-panel .message-function textarea:focus{
+  outline: none;
+}
+.message-panel .btn-box{
+  margin-top:15px;
+  text-align: right
+}
+.message-panel .btn-box a{
+  display: inline-block;
+  width: 80px;
+  height: 36px;
+  font: 14px/36px microsoft yahei;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  margin-left: 15px;
+  border-radius: 5px;
+}
+.message-panel .btn-box a.clear{
+  background: rgba(255,255,255,0.3);
+}
+.message-panel .btn-box a.send{
+  background: rgba(0,0,0,0.45);
+}
+.message-header{
+  height: 30px;
+  margin-bottom:8px;
+}
+.message-header h2{
+  font:16px/30px microsoft yahei;
+  color: #fff;
+  padding-left: 8px;
+}
+
+.message-panel .message-friends{
+  background: rgba(4,102,204,0.5);
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.75);
+  padding:15px;
+  border-radius: 5px;
+  flex: 1;
+}
+.message-panel .message-friends .user-box{
+  width: 100%;
+  padding:20px 0;
+  border:3px dashed #fff;
+  border-radius: 5px;
+}
+.message-panel .message-friends .user-box h2{
+  text-align: center;
+  color: #fbfa02;
+}
+
+.message-panel .message-friends .friend-box{
+  margin-top: 15px;
+  background: rgba(255,255,255,0.4);
+  height: 422px;
+  border-radius: 5px;  
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.message-panel .message-friends .friend-box li{
+  height: 40px;
+  border-bottom:1px solid rgba(0,0,0,0.2); 
+  border-top:1px solid rgba(255,255,255,0.7); 
+  padding:0 15px;
+  transition: all 0.35s;
+}
+.message-panel .message-friends .friend-box li:hover{
+  background: rgba(0,200,255,0.4);
+}
+.message-panel .message-friends .friend-box li a{
+  display: block;
+  font: 16px/40px microsoft yahei;
+  color: #fff;
+  text-shadow: 1px 0px 2px rgba(0,0,0,0.2);
+}
+.message-panel .message-friends .friend-box li.active a{
+  animation: active 1s infinite;
+}
+.message-panel .message-friends .friend-box li:first-of-type{
+  border-top: 0 none;
+}
+.message-panel .message-friends .friend-box li:last-of-type{
+  position: relative;
+}
+.message-panel .message-friends .friend-box li:last-of-type:after{
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  border-top:1px solid rgba(255,255,255,0.7);   
+  z-index: 2;
+}
+
+@keyframes active{
+  0%{
+    color: #fff;
+  }
+  50%{
+    color: #fff;
+  }
+  51%{
+    color: #fbfa02;
+  }
+  100%{
+    color: #fbfa02;
+  }
+}
