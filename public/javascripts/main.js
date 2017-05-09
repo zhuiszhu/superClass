@@ -50,7 +50,10 @@ var testVCode = function(name) {
 var testAll = function(forDom){
     var isAut = true;
     var pwdVal = "";
-    var type = $(".form-js-module").closest("form")[0].type.value;
+    var type = 1;
+    if($(".form-js-module").closest("form")[0].type){
+        type = $(".form-js-module").closest("form")[0].type.value;
+    }
 
     forDom.find(".form-js-module").each(function(){
         var did = $(this).attr("id");

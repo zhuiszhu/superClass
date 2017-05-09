@@ -4,6 +4,16 @@ var event = require("../functions/publicEvent");
 var jm = require("../functions/ecryption").pwd;
 
 var userService = {
+    indexPage: (req , res) => {
+        console.log(req.session.userObj);
+        if(req.session.userObj && req.session.userObj[0].type == 0){
+            res.redirect("/teacher");
+        }else if(req.session.userObj && req.session.userObj[0].type == 1){
+            res.redirect("/student");            
+        }else{
+            res.redirect("/users/login");
+        }
+    },
     loginPage: (req, res) => {//登录页面
         res.render("index", {
             page: "loginPage",
@@ -35,12 +45,12 @@ var userService = {
             event.removeAllListeners("DB_OOP_SUCCESS");
             event.once("DB_OOP_SUCCESS", data => {
                 var usr = data.info;
-
                 if (usr.length == 0) {//用户名密码不正确
                     sendObj.txt = "用户名密码不正确,请重新输入";
                 } else {
                     sendObj.txt = "恭喜您登录成功!"
                     sendObj.aut = true;
+                    sendObj.userType = usr[0].type;
                     req.session.userObj = usr;
                 }
                 res.json(sendObj);
@@ -52,12 +62,6 @@ var userService = {
     registerPage: (req, res) => {//注册页面
         res.render("index", {
             page: "registerPage",
-            title: "message-注册页面"
-        });
-    },
-    adminRegisterPage : (req , res) => {//讲师注册
-        res.render("index", {
-            page: "registerAdminPage",
             title: "message-注册页面"
         });
     },
@@ -74,7 +78,7 @@ var userService = {
         //验证数据是否合法
         if (!testName(userObj.username)) {
             sendObj.txt = "用户名不合法";
-        } else if (!testPwd(userObj.username)) {
+        } else if (!testPwd(userObj.password)) {
             sendObj.txt = "密码不合法";
         } else if (!testClass(userObj.class)) {
             sendObj.txt = "班级名称不合法";
@@ -104,66 +108,6 @@ var userService = {
                         userObj.password = jm(userObj.password);
                         userObj.date = new Date();
                         userObj.friends = [];
-
-                        db.insert(userObj);//开始注册
-
-                    } else {//用户名已存在,返回结果
-                        sendObj.txt = "用户名已存在";
-                        res.json(sendObj);
-                    }
-                } else if (data.oop == "insert") {//注册成功
-                    sendObj.aut = true;
-                    sendObj.txt = "注册成功!";
-                    res.json(sendObj);
-                }
-            });
-
-            db.find({ username: userObj.username });
-
-        }
-    },
-    adminRegister: (req, res) => {//讲师注册ajax请求
-        event.emit("GET_RES", res);
-        var userObj = req.body;
-
-        var sendObj = {
-            aut: false
-        }
-        userObj.username = userObj.username.trim();
-        userObj.class = userObj.class.trim();
-
-        //验证数据是否合法
-        if (!testName(userObj.username)) {
-            sendObj.txt = "用户名不合法";
-        } else if (!testPwd(userObj.username)) {
-            sendObj.txt = "密码不合法";
-        } else if (!testClass(userObj.class)) {
-            sendObj.txt = "班级名不合法";
-        } else {
-            sendObj.aut = true;
-        }
-
-        if (!sendObj.aut) {//信息不合法时像前端返回信息,并不执行插入数据操作
-            res.json(sendObj);
-        } else {//信息合法时,执行进一步操作
-            sendObj.aut = false;
-
-            //数据库操作成功
-            event.removeAllListeners("DB_OOP_SUCCESS");
-            event.on("DB_OOP_SUCCESS", data => {
-                var usr = null;
-                if (data.oop == "find") {//查询成功
-                    usr = data.info;
-                    if (usr.length == 0) {//用户名不存在,可用
-
-                        /**
-                         * 注册各种操作
-                         */
-
-                        userObj.password = jm(userObj.password);//密码处理
-                        userObj.date = new Date();//注册日期
-                        userObj.type = 0;//用户类型
-                        userObj.topicID = [];//题目ID列表
 
                         db.insert(userObj);//开始注册
 

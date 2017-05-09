@@ -23,11 +23,7 @@
                 data : userObj,
                 type : "post",
                 success : function(data){
-                    if(data.aut){
-                        location.href = "/message";
-                    }else{
-                        alert(data.txt);
-                    }
+                    location.href = "/";
                 }
             })
         }
