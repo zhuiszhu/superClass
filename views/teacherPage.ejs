@@ -5,14 +5,32 @@
         <p>班级人数:<span><%= stuList.length%></span></p>
         <p>上线人数:<span id="inlineNum">0</span></p>
         <p>本场最佳:<span id="mvp">XXX</span></p>
+        <a href="javascript:;" class="btn pushTopic">发起提问</a>
+        <a href="javascript:;" class="btn">学员管理</a>
     </div>
     <div class="student-list">
         <ul>
-            <% stuList.map(function(item , index){%>
+            <% stuList.map(function(item){%>
                 <li data-id=<%- item._id %> >
                     <h3><%= item.username %></h3>
                 </li>
             <%}) %>
         </ul>
+    </div>
+</div>
+<div class="topic-box" style="display:none;">
+    <div class="topic-panel">
+        <h2 class="topic-header clr">发起提问 <a href="javascript:;" class="frt close-btn">x</a></h2>
+        <form>
+            <div class="topic-title">
+                <input type="text" name="topicTitle" placeholder="请输入标题" />
+            </div>
+            <div class="topic-content">
+                <textarea name="topicContent" placeholder="请输入内容" id="" cols="130" rows="15"></textarea>
+            </div>
+            <div class="topic-footer clr">
+                <button type="submit" class="frt">发布提问</button>
+            </div>
+        </form>
     </div>
 </div>

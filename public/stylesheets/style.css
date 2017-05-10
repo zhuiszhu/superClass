@@ -99,7 +99,7 @@ header{
   display: flex;
 }
 .message-panel.teacher{
-  width: 900px;
+  width: 1200px;
 }
 .message-panel .message-function{
   background: rgba(4,102,204,0.5);
@@ -261,7 +261,7 @@ header{
 .student-list ul{
   display: block;
   margin: 0;
-  padding:15px;
+  padding:10px;
 }
 .student-list ul::after{
   content: "";
@@ -271,8 +271,8 @@ header{
 .student-list ul li{
   display: block;
   float: left;
-  width: 20%;
-  height: 80px;
+  width: 12.5%;
+  height: 64px;
   background: #f3f3f3;
   box-sizing: border-box;
   padding:10px;
@@ -295,12 +295,102 @@ header{
 }
 .student-list ul li.answer .message-box{
   border:1px solid #fff;
-  margin-top:12px;
+  margin:7px auto 0 auto;
   color: #fff;
   border-radius: 5px;
-  padding:3px 10px; 
+  font-size: 12px;
+  padding:2px 10px;
+  width: 60%; 
   text-align: center;
 }
 .student-list ul li.answer .message-box::after{
   content: "已答题";
+}
+
+.topic-box{
+  position: fixed;
+  z-index: 99;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: rgba(0,0,0,0.45);
+}
+
+.topic-box .topic-panel{
+  position: fixed;
+  z-index: 100;
+  width: 80%;
+  height: 80%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  background: #fff;
+}
+.topic-box .topic-panel .topic-header{
+  height: 40px;
+  background: #a2b5ec;
+  font:100 16px/40px microsoft yahei;
+  color: #fff;
+  padding-left: 15px;
+}
+.topic-box .topic-panel .topic-header .close-btn{
+  display: block;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  color: #fff;
+}
+.topic-box .topic-panel .topic-header .close-btn:hover{
+  background: rgba(0,0,0,0.2);
+}
+.topic-box .topic-panel form{
+  display: block;
+  padding:0 20px;
+}
+
+.topic-box .topic-panel .topic-title,
+.topic-box .topic-panel .topic-content,
+.topic-box .topic-panel .topic-footer{
+  padding-top:20px;
+}
+.topic-box .topic-panel .topic-title input{
+  height: 45px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font: 16px/45px microsoft yahei;
+  color: #666;
+  padding : 0 15px;
+  border:1px solid #ccc;
+  border-radius: 5px;
+}
+.topic-box .topic-panel .topic-content textarea{
+  display: block;
+  width: 100%;
+  padding:7px 15px;
+  line-height: 20px;
+  border:1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  resize: none;
+  color: #666;
+}
+.topic-box .topic-panel .topic-content textarea:focus{
+  outline: none;
+}
+
+.topic-box .topic-panel .topic-footer button{
+  display: block;
+  border: 0 none;
+  background: #04b7f1;
+  text-align: center;
+  height: 35px;
+  color: #fff;
+  width: 110px;
+  cursor: pointer;
+  
+}
+.topic-box .topic-panel .topic-footer button:hover{
+  background: #04d4f1;  
 }

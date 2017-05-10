@@ -23,11 +23,13 @@ $(function () {
             case "USER_LIST":
                 // updateUserList(dataObj.content);//更新用户列表
                 console.log(dataObj);
+                var num = dataObj.content.length;
                 $(".student-list").find("li.inline").removeClass("inline");
                 dataObj.content.map(function(item){
                     console.log(item._id);
                     $(".student-list").find("li[data-id="+item._id+"]").addClass("inline");
                 })
+                $("#inlineNum").text(num);
                 break;
             case "MESSAGE":
                 // receiveInfo(dataObj);
@@ -36,5 +38,11 @@ $(function () {
 
     }
 
+    $(".topic-panel").find(".close-btn").click(function(){
+        $(this).closest(".topic-box").hide();
+    });
 
+    $(".pushTopic").click(function(){
+        $(".topic-box").show();
+    })
 });
