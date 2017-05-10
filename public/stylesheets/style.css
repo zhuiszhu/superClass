@@ -253,6 +253,20 @@ header{
   color: #fff;
 }
 
+.class-info .btn{
+  display: block;
+  /*border:1px solid #fff;*/
+  text-align: center;
+  line-height: 35px;
+  font : 14px/35px microsoft yahei;
+  margin:10px 15px;
+  background: rgba(255,255,255,0.4);
+  color: #fff;
+}
+.class-info .btn:hover{
+  background: rgba(255,255,255,0.6);
+}
+
 .student-list{
   flex: 1;
   border:1px solid #ccc;
@@ -393,4 +407,7 @@ header{
 }
 .topic-box .topic-panel .topic-footer button:hover{
   background: #04d4f1;  
+}
+.topic-box .err{
+  border : 1px solid #c33232 ! important;
 }

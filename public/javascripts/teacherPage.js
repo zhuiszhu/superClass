@@ -45,4 +45,32 @@ $(function () {
     $(".pushTopic").click(function(){
         $(".topic-box").show();
     })
+
+    $("#topic").submit(function(e){
+        e.preventDefault();
+
+        var topicObj = {
+            title : this.topicTitle.value,
+            content : this.topicContent.value,
+        }
+
+        topicObj.title = topicObj.title.trim();
+        topicObj.content = topicObj.content.trim();
+
+        if(!topicObj.title){
+            $(this.topicTitle).addClass("err");
+        }else if(!topicObj.content){
+            $(this.topicContent).addClass("err");            
+        }else{//标题和内容均有数据,允许提交
+            console.log(topicObj);
+        }
+    })
+
+    $("#topic").on("blur" , ".err" , function(){
+        // var value = $(this).value;
+        var value = $.trim(this.value);
+        if(!!value){
+            $(this).removeClass("err");
+        }
+    })
 });
