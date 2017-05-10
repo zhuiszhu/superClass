@@ -6,14 +6,14 @@ var getSocketUser = require("../service/socketService");
 var classService = {
     teacherPage: (req, res) => {//讲师页面
         if (req.session.userObj && req.session.userObj[0].type == 0) {
-            //向socket服务器传送session用户信息
-            getSocketUser(req.session.userObj[0]);
+
             var userObj = req.session.userObj[0];
+            //向socket服务器传送session用户信息
+            getSocketUser(userObj);
             
             event.removeAllListeners("DB_OOP_SUCCESS");
             event.once("DB_OOP_SUCCESS", data => {
                 var usr = data.info;
-                console.log(usr);
                 /*
                 if (usr.length == 0) {//用户名密码不正确
                     sendObj.txt = "用户名密码不正确,请重新输入";
@@ -23,6 +23,7 @@ var classService = {
                     sendObj.userType = usr[0].type;
                     req.session.userObj = usr;
                 }*/
+                console.log(usr);
                 res.render("index" , {
                     page : "teacherPage",
                     title : `超级课堂--${userObj.username}`,
@@ -63,7 +64,16 @@ var classService = {
     },
     studentPage: (req , res) => {//学生页面
         if(req.session.userObj && req.session.userObj[0].type == 1){
-            res.send("学生页面");
+            var userObj = req.session.userObj[0];
+            //向socket服务器传送session用户信息
+            getSocketUser(userObj);
+
+            res.render("index" , {
+                page : "studentPage",
+                title : `超级课堂--${userObj.username}`,
+                userObj : userObj
+            });
+
         }else if(req.session.userObj && req.session.userObj[0].type == 0){
             res.redirect("/teacher");            
         }else{

@@ -2,6 +2,7 @@ var WebSocketServer = require("ws").Server;
 var pjtObj = require("../functions/projectConfig").socket;
 var socket = new WebSocketServer({ port: pjtObj.port , host : pjtObj.connect });
 var clientMap = {};//用户连接池
+var teaClient = null;//教师客户端
 var userObj = null;//用户信息
 
 socket.on("connection", client => {
@@ -10,11 +11,22 @@ socket.on("connection", client => {
         delete userObj.password;
         delete userObj.friends;
 
-        client.userObj = userObj;
-        clientMap[userObj._id] = client;
+        if(userObj.type == 0){//教师连接
+            client.userObj = userObj;
+            teaClient = client;
+            
+        }else{//学员连接
+            client.userObj = userObj;
+            clientMap[userObj._id] = client;
+        }
+
+        //只要教师在线,就更新学员列表
+        if(teaClient != null){
+            sendUserList();//更新学员上线列表
+        }
+
         userObj = null;
 
-        sendUserList();//更新用户列表
 
         client.on("message", data => {
             // console.log(data);
@@ -31,8 +43,14 @@ socket.on("connection", client => {
 
         client.on("close", () => {
             console.log("连接被关闭了");
-            delete clientMap[client.userObj._id];
-            sendUserList();//更新用户列表
+
+            if(client.userObj.type == 0){//教师端下线
+                teaClient = null;
+            }else{
+                delete clientMap[client.userObj._id];//更新学员列表
+                sendUserList();//向教师端更新学员列表
+            }
+
         });
 
         client.on("error", err => {
@@ -73,20 +91,26 @@ var sendUserNum = () => {
     emitAll(JSON.stringify(data));
 }
 
+/**
+ * 向教师客户端更新学员列表
+ */
 var sendUserList = () => {
-    var userList = [];
 
-    for(var i in clientMap){
-        var userObj = clientMap[i].userObj;
-        userList.push(userObj);
+    if(teaClient != null){//教师在线时,向客户端发送学员列表
+        var userList = [];
+
+        for(var i in clientMap){
+            var userObj = clientMap[i].userObj;
+            userList.push(userObj);
+        }
+
+        var message = {
+            type : "USER_LIST",
+            content : userList
+        }
+
+        teaClient.send(JSON.stringify(message));
     }
-
-    var message = {
-        type : "USER_LIST",
-        content : userList
-    }
-
-    emitAll(JSON.stringify(message));
 }
 /**
  * 发送信息给指定的用户

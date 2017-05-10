@@ -8,8 +8,10 @@
     </div>
     <div class="student-list">
         <ul>
-            <% stuList.map(function(item){%>
-                <li><%= item.username %></li>
+            <% stuList.map(function(item , index){%>
+                <li data-id=<%- item._id %> >
+                    <h3><%= item.username %></h3>
+                </li>
             <%}) %>
         </ul>
     </div>

@@ -23,11 +23,6 @@ $(function () {
             case "USER_LIST":
                 // updateUserList(dataObj.content);//更新用户列表
                 console.log(dataObj);
-                $(".student-list").find("li.inline").removeClass("inline");
-                dataObj.content.map(function(item){
-                    console.log(item._id);
-                    $(".student-list").find("li[data-id="+item._id+"]").addClass("inline");
-                })
                 break;
             case "MESSAGE":
                 // receiveInfo(dataObj);

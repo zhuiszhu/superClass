@@ -1,7 +1,7 @@
 
 const home = "localhost";
 const cr = "192.168.59.223"
-const IP = home;
+const IP = cr;
 
 var conObj = {
     http : {
