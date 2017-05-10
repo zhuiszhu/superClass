@@ -52,6 +52,7 @@ $(function () {
         var topicObj = {
             title : this.topicTitle.value,
             content : this.topicContent.value,
+            fraction : this.fraction.value
         }
 
         topicObj.title = topicObj.title.trim();
@@ -63,6 +64,22 @@ $(function () {
             $(this.topicContent).addClass("err");            
         }else{//标题和内容均有数据,允许提交
             console.log(topicObj);
+            $.ajax({
+                url : "/ajax/insertTopic",
+                type : "post",
+                data : topicObj,
+                success : function(data){
+                    console.log(data);
+                    if(data.aut){
+                        alert(data.txt);
+                        $(".topic-box").hide();
+                        $("#topic").find("input.title").val("");
+                        $("#topic").find("textarea").val("");
+                    }else{
+                        alert(data.txt);
+                    }
+                }
+            })
         }
     })
 
@@ -71,6 +88,13 @@ $(function () {
         var value = $.trim(this.value);
         if(!!value){
             $(this).removeClass("err");
+        }
+    })
+    $("#topic").find("input.fraction").on("blur" , function(){
+        var value = this.value*1;
+        
+        if(isNaN(value) || value == 0){
+            $(this).val(2);
         }
     })
 });

@@ -23,7 +23,6 @@ var classService = {
                     sendObj.userType = usr[0].type;
                     req.session.userObj = usr;
                 }*/
-                console.log(usr);
                 res.render("index" , {
                     page : "teacherPage",
                     title : `超级课堂--${userObj.username}`,

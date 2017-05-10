@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var userService = require('../service/userService');
+var topicService = require('../service/topicService');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -22,6 +23,11 @@ router.post('/users/findUser' , (req , res , next) => {
 //查询可用班级数
 router.get('/users/findClass' , (req , res , next) => {
   userService.findClass(req , res);
+})
+
+//查询可用班级数
+router.post('/insertTopic' , (req , res , next) => {
+  topicService.insertTopic(req , res);
 })
 
 

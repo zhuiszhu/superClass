@@ -368,10 +368,12 @@ header{
 .topic-box .topic-panel .topic-footer{
   padding-top:20px;
 }
+.topic-box .topic-panel .topic-title{
+  display: flex;
+}
 .topic-box .topic-panel .topic-title input{
   height: 45px;
   display: block;
-  width: 100%;
   box-sizing: border-box;
   font: 16px/45px microsoft yahei;
   color: #666;
@@ -379,6 +381,14 @@ header{
   border:1px solid #ccc;
   border-radius: 5px;
 }
+.topic-box .topic-panel .topic-title input.title{
+  flex: 1
+}
+.topic-box .topic-panel .topic-title input.fraction{
+  width: 200px;
+  margin-left:15px; 
+}
+
 .topic-box .topic-panel .topic-content textarea{
   display: block;
   width: 100%;
