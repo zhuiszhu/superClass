@@ -22,17 +22,21 @@ $(function () {
                 break;
             case "USER_LIST":
                 // updateUserList(dataObj.content);//更新用户列表
-                console.log(dataObj);
                 var num = dataObj.content.length;
                 $(".student-list").find("li.inline").removeClass("inline");
                 dataObj.content.map(function(item){
-                    console.log(item._id);
                     $(".student-list").find("li[data-id="+item._id+"]").addClass("inline");
                 })
                 $("#inlineNum").text(num);
                 break;
             case "MESSAGE":
                 // receiveInfo(dataObj);
+                break;
+            case "REPLY":
+                var stuDom = $(".student-list").find("li[data-id="+dataObj.content.studentID+"]");
+                stuDom.find(".reply-box").text(dataObj.content.replyContent);
+                stuDom.addClass("answer");
+                
                 break;
         }
 
@@ -63,15 +67,13 @@ $(function () {
         }else if(!topicObj.content){
             $(this.topicContent).addClass("err");            
         }else{//标题和内容均有数据,允许提交
-            console.log(topicObj);
             $.ajax({
                 url : "/ajax/insertTopic",
                 type : "post",
                 data : topicObj,
                 success : function(data){
-                    console.log(data);
                     if(data.aut){
-                        alert(data.txt);
+                        // alert(data.txt);
                         $(".topic-box").hide();
                         $("#topic").find("input.title").val("");
                         $("#topic").find("textarea").val("");
@@ -90,6 +92,7 @@ $(function () {
             $(this).removeClass("err");
         }
     })
+    
     $("#topic").find("input.fraction").on("blur" , function(){
         var value = this.value*1;
         
@@ -97,4 +100,9 @@ $(function () {
             $(this).val(2);
         }
     })
+
+    $(".show-js-btn").click(function(){
+        $(".answer").removeClass("answer");
+        $(".inline").addClass("reply");
+    });
 });

@@ -25,9 +25,14 @@ router.get('/users/findClass' , (req , res , next) => {
   userService.findClass(req , res);
 })
 
-//查询可用班级数
+//添加问题
 router.post('/insertTopic' , (req , res , next) => {
   topicService.insertTopic(req , res);
+})
+
+//回答问题
+router.post('/replyTopic' , (req , res , next) => {
+  topicService.replyTopic(req , res);
 })
 
 

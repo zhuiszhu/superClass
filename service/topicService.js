@@ -1,4 +1,5 @@
 var DBCon = require("../db/DBconnect.js");
+var ObjectID = require("objectid");
 var userDB = new DBCon("users");
 var topicDB = new DBCon("topic");
 var sTTDB = new DBCon("studentToTopic");
@@ -59,7 +60,10 @@ var topicService = {
                                     replyTime : null,
                                     class : userObj.class,
                                     fraction : topicObj.fraction,
-                                    state : false
+                                    state : false,
+                                    title : topicObj.title,
+                                    content : topicObj.content,
+                                    replyContent : null
                                 }
                             });
                             sTTDB.insert(dataList);
@@ -78,6 +82,63 @@ var topicService = {
 
         }else{
             sendObj.txt = "权限不足!仅讲师账号可添加提问!";
+            res.json(sendObj);
+        }
+    },
+    replyTopic : (req , res) => {
+        event.emit("GET_RES", res);
+        var sendObj = {
+            aut : false
+        }
+
+        if (req.session.userObj && req.session.userObj[0].type == 1){//学员身份,可以回答问题
+            var userObj = req.session.userObj[0];
+            var topicObj = req.body;
+            topicObj.content = topicObj.content.trim();
+
+            if(!topicObj.content){
+                sendObj.txt = "内容不能为空!";
+                res.json(sendObj);                  
+            }else{
+                var tid = ObjectID(topicObj.topicId);
+                var uid = ObjectID(userObj._id);
+
+                event.removeAllListeners("DB_OOP_SUCCESS");
+                event.on("DB_OOP_SUCCESS" , data => {
+                    if(data.collection == "studentToTopic" && data.oop == "find"){//查询该题
+                        var sttObj = data.info[0];
+
+                        if(data.info.length != 0){
+                            if(sttObj.state){//将答题后的状态发送给讲师
+                                getSocketUser.sendReply(sttObj);
+
+                            }else{
+                                var sttId = data.info[0]._id;
+                                sTTDB.update({_id : sttId},{replyTime : new Date(),state: true , replyContent : topicObj.content});
+                            }
+                        }else{
+                            sendObj.txt = "您未被添加该题目!";
+                            res.json(sendObj);
+                        }
+                    }else if(data.collection == "studentToTopic" && data.oop == "update"){//更新成功
+                        
+                        if(data.info.result.n >= 1){//更新成功
+                            sendObj.aut = true;
+                            sendObj.txt = "提交成功!";
+                            sTTDB.find({studentID : uid , topicID : tid});
+                        }else{
+                            sendObj.aut = false;
+                            sendObj.txt = "数据更新失败!请联系管理员";
+                        }
+                        res.json(sendObj);
+                    }
+                });
+
+                sTTDB.find({studentID : uid , topicID : tid});
+
+            }
+        }else{
+            sendObj.txt = "验证失败,请登录后回答问题";
             res.json(sendObj);
         }
     }

@@ -81,6 +81,32 @@ function DBPool(collectionName) {//操作表构造函数
             }
         })
     }
+
+    this.update = (select , updateObj ) => {
+        mClient.connect(DB_CONN_STR, (err, db) => {
+            var eObj = {
+                collection: collectionName,
+                oop: "update"
+            }
+            if (err) {
+                eObj.info = err;
+                event.emit("DB_CONN_ERROR", eObj);
+            } else {
+                var users = db.collection(eObj.collection);
+                users.update(select , {$set : updateObj} , (err , results) => {
+                    if (err) {
+                        eObj.info = err;
+                        event.emit("DB_OOP_ERROR", eObj);
+                    } else {
+                        eObj.info = results;
+                        event.emit("DB_OOP_SUCCESS", eObj);
+                    }
+                })
+
+                db.close();
+            }
+        })
+    }
 }
 
 module.exports = DBPool;

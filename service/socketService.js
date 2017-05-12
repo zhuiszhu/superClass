@@ -75,6 +75,9 @@ var emitAll = data => {
     }
 }
 
+/**
+ * 统计在线学员数量
+ */
 var getClientNum = () => {
     var count = 0;
     for (var i in clientMap) {
@@ -145,6 +148,22 @@ var sendTopicToUser = (aimsID , topicObj) => {
 }
 
 /**
+ * 发送答题状态给讲师
+ * @param {object} studentToTopic : 要发送的题目学员关系对象
+ */
+var sendReply = (studentToTopic) => {
+
+    if(teaClient != null){
+        var sendObj = {
+            type : "REPLY",
+            content : studentToTopic
+        }
+
+        teaClient.send(JSON.stringify(sendObj));
+    }
+}
+
+/**
  * 向全体在线学员发送题目
  * @param {object} topicObj 题目对象,包含题目id,题目标题,题目内容,题目分数等
  */
@@ -161,5 +180,6 @@ module.exports = {
         userObj = sessionObj;
     },
     sendTopic : sendTopic,
-    sendTopicToUser :sendTopicToUser
+    sendTopicToUser :sendTopicToUser,
+    sendReply : sendReply
 }

@@ -46,7 +46,7 @@ var classService = {
                 event.removeAllListeners("DB_OOP_SUCCESS");
                 event.once("DB_OOP_SUCCESS", data => {
                     var stt = data.info[0];
-
+                    
                     if(!stt.state){//题目未回答过,给学生客户端提示
                         SocketObj.sendTopicToUser(userObj._id , state.topicState);
                     }
@@ -55,8 +55,6 @@ var classService = {
                 // 包装id 以供查询
                 var sid = ObjectId(userObj._id);
                 var tid = ObjectId(state.topicState._id);
-
-
 
                 event.removeAllListeners(userObj._id);
                 event.on(userObj._id , function(){//注册学员的上线事件,当学员websoket客户端上线之后,再触进行查询题目

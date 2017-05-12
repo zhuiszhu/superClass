@@ -320,7 +320,37 @@ header{
 .student-list ul li.answer .message-box::after{
   content: "已答题";
 }
-
+.student-list ul li .reply-box{
+  display: none;
+  border:1px solid #fff;
+  margin:7px auto 0 auto;
+  color: #fff;
+  border-radius: 5px;
+  font-size: 12px;
+  padding:2px 10px;
+  width: 60%; 
+  text-align: center;
+  overflow: hidden;
+}
+.student-list ul li.reply .reply-box{
+  display: block;
+}
+.student-list .show-btn{
+  display: block;
+  border: 0 none;
+  background: #04b7f1;
+  text-align: center;
+  height: 35px;
+  line-height: 35px;
+  color: #fff;
+  width: 110px;
+  cursor: pointer;
+  float: right;
+  margin: 10px;
+}
+.student-list .show-btn:hover{
+  background: #04d4f1;
+}
 .topic-box{
   position: fixed;
   z-index: 99;
