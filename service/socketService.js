@@ -4,6 +4,7 @@ var socket = new WebSocketServer({ port: pjtObj.port , host : pjtObj.connect });
 var clientMap = {};//用户连接池
 var teaClient = null;//教师客户端
 var userObj = null;//用户信息
+var event = require("../functions/publicEvent");
 
 socket.on("connection", client => {
 
@@ -18,6 +19,7 @@ socket.on("connection", client => {
         }else{//学员连接
             client.userObj = userObj;
             clientMap[userObj._id] = client;
+            event.emit(userObj._id);//通知classService 该学员已上线
         }
 
         //只要教师在线,就更新学员列表
@@ -62,10 +64,10 @@ socket.on("connection", client => {
     }
 
 });
-
+/*
 module.exports = sessionObj => {
     userObj = sessionObj;
-};
+};*/
 
 var emitAll = data => {
     for (var i in clientMap) {
@@ -126,4 +128,38 @@ var sendMessage = (aimsID , message , sendID) => {
     }
 
     clientMap[aimsID].send(JSON.stringify(sendObj));
+}
+
+/**
+ * 发送题目给指定的学员
+ * @param {string} aimsID :信息接收者id
+ * @param {object} topicObj : 要发送的题目
+ */
+var sendTopicToUser = (aimsID , topicObj) => {
+    var sendObj = {
+        type : "TOPIC",
+        content : topicObj
+    }
+
+    clientMap[aimsID].send(JSON.stringify(sendObj));
+}
+
+/**
+ * 向全体在线学员发送题目
+ * @param {object} topicObj 题目对象,包含题目id,题目标题,题目内容,题目分数等
+ */
+var sendTopic = topicObj => {
+    var sendObj = {
+        type : "TOPIC",
+        content : topicObj
+    }
+
+    emitAll(JSON.stringify(sendObj));
+}
+module.exports = {
+    sendSessionObj : sessionObj => {
+        userObj = sessionObj;
+    },
+    sendTopic : sendTopic,
+    sendTopicToUser :sendTopicToUser
 }

@@ -4,6 +4,7 @@ var topicDB = new DBCon("topic");
 var sTTDB = new DBCon("studentToTopic");
 var event = require("../functions/publicEvent");
 var getSocketUser = require("../service/socketService");
+var state = require("./projectState.js");
 
 var topicService = {
     insertTopic : (req , res) => {
@@ -44,7 +45,6 @@ var topicService = {
 
                         topicID = data.info.insertedIds[0];
 
-
                         userDB.find({class : userObj.class , type : "1"},{_id : 1});
 
                     }else if(data.collection == "users" && data.oop == "find"){//对用户列表的查询操作成功
@@ -68,7 +68,8 @@ var topicService = {
                         sendObj.aut = true;
                         sendObj.txt = "添加成功";
                         res.json(sendObj);
-                        
+                        getSocketUser.sendTopic(topicObj);//向学员发送数据
+                        state.topicState = topicObj;//提问状态管理
                     }
                 });
 

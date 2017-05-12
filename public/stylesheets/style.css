@@ -335,7 +335,9 @@ header{
   position: fixed;
   z-index: 100;
   width: 80%;
-  height: 80%;
+  max-height: 80%;
+  padding-bottom: 15px;
+  overflow-y: auto;
   left: 50%;
   top: 50%;
   transform: translate(-50%,-50%);
@@ -402,6 +404,12 @@ header{
 }
 .topic-box .topic-panel .topic-content textarea:focus{
   outline: none;
+}
+.topic-box .topic-panel .topic-content p{
+  margin-bottom: 15px;
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .topic-box .topic-panel .topic-footer button{

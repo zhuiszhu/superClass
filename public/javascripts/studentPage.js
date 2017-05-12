@@ -1,5 +1,6 @@
 $(function () {
     var ws = new WebSocket("ws://192.168.59.223:8000");
+    var topicDom = $(".topic-box");
     var sktObj = {
         type: "CONNECT",
         code: 200
@@ -26,6 +27,13 @@ $(function () {
                 break;
             case "MESSAGE":
                 // receiveInfo(dataObj);
+                break;
+            case "TOPIC":
+                console.log(dataObj);
+                topicDom.show();
+                topicDom.find(".topic-title").find("span").text(dataObj.content.title);
+                topicDom.find(".topic-content").find("p").text(dataObj.content.content);
+                $("#topic").attr("data-id",dataObj.content._id);
                 break;
         }
 
