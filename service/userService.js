@@ -83,6 +83,8 @@ var userService = {
             sendObj.txt = "班级名称不合法";
         } else if (userObj.type == 0 && userObj.vCode != "thisiszhu") {
             sendObj.txt = "邀请码错误";
+        } else if (userObj.type == 1 && !testActualName(userObj.actualName)) {
+            sendObj.txt = "请输入真实姓名!";
         } else {
             sendObj.aut = true;
         }
@@ -162,13 +164,10 @@ var userService = {
 
         event.removeAllListeners("DB_OOP_SUCCESS");
             event.on("DB_OOP_SUCCESS", data => {//查询成功
-                
-                console.log(data);
-
                 res.json(data.info);
             });
 
-            db.find({ type: 0 },{class:1 , _id : 0});
+            db.find({ type: "0" },{class:1 , _id : 0});
     }
 };
 
@@ -203,6 +202,15 @@ var testEmail = eml => {
 var testClass = className => {
     var zz = /\w{4,20}/;
     return zz.test(className);
+}
+
+/**
+ * 验证真实姓名是否合法
+ * @param {string} aName 真实姓名
+ */
+var testActualName = aName => {
+    var zz = /^([\u4e00-\u9fa5]){2,4}$/;
+    return zz.test(aName);
 }
 
 module.exports = userService;

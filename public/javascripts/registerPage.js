@@ -6,6 +6,7 @@
         password1Dom = $("#password1"),//password1模块Dom
         classDom = $("#class"),//class模块Dom
         vCodeDom = $("#vCode"),//邀请码模块Dom
+        actualNameDom = $("#actualName"),//真实姓名dom
         aut = {
             username: false,
             password: false,
@@ -19,6 +20,7 @@
         url : "/ajax/users/findClass",
         type : "get",
         success : function(data){
+            console.log(data);
             data.map(function(item){
                 var oDom = $("<option value='"+item.class+"'>"+item.class+"</option>");
                 $("#stuClass").find("select").append(oDom);
@@ -38,6 +40,7 @@
             userObj.username = usernameDom.find("input").val();
             userObj.password = passwordDom.find("input").val();
             userObj.type = type;
+            userObj.actualName = actualNameDom.find("input").val();
             if(type == 0){//若是讲师注册,则提交邀请码,并从输入框中获取class
                 userObj.vCode = vCodeDom.find("input").val();
                 userObj.class = classDom.find("input").val();
@@ -71,10 +74,12 @@
             $("#vCode").show();
             $("#class").show();
             $("#stuClass").hide();
+            $("#actualName").hide();
         }else{
             $("#vCode").hide();
             $("#class").hide();            
             $("#stuClass").show();            
+            $("#actualName").show();
         }
     });
 
