@@ -8,6 +8,15 @@ var testName = function(name) {
 }
 
 /**
+ * 验证真实姓名是否合法(姓名为2-4位汉字)
+ * @param {string} name 真实姓名
+ */
+var testActualName = function(name) {
+    var zz = /^([\u4e00-\u9fa5]){2,4}$/;
+    return zz.test(name);
+}
+
+/**
  * 验证密码是否合法(不含空格且仅为6-20位数字字母或下划线)
  * @param {string} pwd 密码
  */
@@ -96,6 +105,12 @@ var testAll = function(forDom){
                 if(type == 0 && !testVCode(inVal)){//讲师注册
                     isAut = false;
                     oopM($(this), "注册邀请码格式不正确");                    
+                }
+                break;
+            case "actualName":
+                if(type == 1 && !testActualName(inVal)){//学生注册
+                    isAut = false;
+                    oopM($(this), "请输入真实姓名!不许调皮!");                    
                 }
                 break;
         }

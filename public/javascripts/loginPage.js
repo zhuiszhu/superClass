@@ -38,8 +38,6 @@
                 data : userObj,
                 type : "post",
                 success : function(data){
-                    console.log(data);
-
                     if(data.aut){
                         if(rememberDom.checked){
                             localStorage.setItem("remember" , "1");

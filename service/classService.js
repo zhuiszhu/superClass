@@ -14,15 +14,30 @@ var classService = {
             SocketObj.sendSessionObj(userObj);
             
             event.removeAllListeners("DB_OOP_SUCCESS");
-            event.once("DB_OOP_SUCCESS", data => {
-                var usr = data.info;
-                
-                res.render("index" , {
-                    page : "teacherPage",
-                    title : `超级课堂--${userObj.username}`,
-                    stuList : usr,
-                    userObj : userObj
-                });
+            event.on("DB_OOP_SUCCESS", data => {
+
+                if(data.collection == "users" && data.oop == "find"){
+                    var usr = data.info;
+                    
+                    res.render("index" , {
+                        page : "teacherPage",
+                        title : `超级课堂--${userObj.username}`,
+                        stuList : usr,
+                        userObj : userObj
+                    });
+
+                    if(state.topicState != null){
+                        sTTDB.find({state : true , topicID : state.topicState._id});
+                    }
+                }else if(data.collection == "studentToTopic" && data.oop == "find"){
+                    var list = data.info; 
+                    event.removeAllListeners("TEACHER_INLINE");
+                    event.once("TEACHER_INLINE" , function(){
+                        list.map(function(item){
+                            SocketObj.sendReply(item);
+                        })
+                    });
+                }
             });
 
             db.find({type : "1" , class : userObj.class},{password : 0});
@@ -39,12 +54,11 @@ var classService = {
             //向socket服务器传送session用户信息
             SocketObj.sendSessionObj(userObj);
 
-
             //获取读题状态,非空为回答题目期间
             if(state.topicState != null){
 
                 event.removeAllListeners("DB_OOP_SUCCESS");
-                event.once("DB_OOP_SUCCESS", data => {
+                event.on("DB_OOP_SUCCESS", data => {
                     var stt = data.info[0];
                     
                     if(!stt.state){//题目未回答过,给学生客户端提示

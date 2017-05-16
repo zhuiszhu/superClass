@@ -19,7 +19,6 @@
         url : "/ajax/users/findClass",
         type : "get",
         success : function(data){
-            console.log(data);
             data.map(function(item){
                 var oDom = $("<option value='"+item.class+"'>"+item.class+"</option>");
                 $("#stuClass").find("select").append(oDom);
@@ -83,6 +82,8 @@
         var mod = $(this).closest(".form-js-module");
         var did = mod.attr("id");
         var inVal = $(this).val();
+        var type = $(this).closest("form")[0].type.value;
+        
 
 
         switch (did) {
@@ -146,11 +147,18 @@
                 }
                 break;
             case "vCode":
-                var type = $(this).closest("form")[0].type.value;
                 if (type == 0 && !testVCode(inVal)){
                     oopM(mod, "请输入1-20位字母和数字组成的邀请码");
                 }else if(type == 0){
                     oopM(mod, "邀请码格式正确" , true);
+                }
+                break;
+            case "actualName":
+                if(type == 1 && !testActualName(inVal)){//学生注册
+                    isAut = false;
+                    oopM(mod, "请输入真实姓名!不许调皮!");                    
+                }else{
+                    oopM(mod, "姓名格式正确" , true);
                 }
                 break;
         }

@@ -1,5 +1,5 @@
 $(function () {
-    var ws = new WebSocket("ws://192.168.59.223:8000");
+    var ws = new WebSocket("ws://192.168.59.208:8000");
     var topicDom = $(".topic-box");
     var formDom = $("#topic");
     var sktObj = {

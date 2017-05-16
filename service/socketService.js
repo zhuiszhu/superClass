@@ -5,6 +5,7 @@ var clientMap = {};//用户连接池
 var teaClient = null;//教师客户端
 var userObj = null;//用户信息
 var event = require("../functions/publicEvent");
+var projectState = require("../service/projectState.js");
 
 socket.on("connection", client => {
 
@@ -15,7 +16,7 @@ socket.on("connection", client => {
         if(userObj.type == 0){//教师连接
             client.userObj = userObj;
             teaClient = client;
-            
+            event.emit("TEACHER_INLINE");//通知classService 教师已上线            
         }else{//学员连接
             client.userObj = userObj;
             clientMap[userObj._id] = client;
@@ -101,13 +102,14 @@ var sendUserNum = () => {
  */
 var sendUserList = () => {
 
-    if(teaClient != null){//教师在线时,向客户端发送学员列表
-        var userList = [];
+    var userList = [];
 
-        for(var i in clientMap){
-            var userObj = clientMap[i].userObj;
-            userList.push(userObj);
-        }
+    for(var i in clientMap){
+        var userObj = clientMap[i].userObj;
+        userList.push(userObj);
+    }
+
+    if(teaClient != null){//教师在线时,向客户端发送学员列表
 
         var message = {
             type : "USER_LIST",
@@ -152,7 +154,6 @@ var sendTopicToUser = (aimsID , topicObj) => {
  * @param {object} studentToTopic : 要发送的题目学员关系对象
  */
 var sendReply = (studentToTopic) => {
-
     if(teaClient != null){
         var sendObj = {
             type : "REPLY",
@@ -161,6 +162,7 @@ var sendReply = (studentToTopic) => {
 
         teaClient.send(JSON.stringify(sendObj));
     }
+
 }
 
 /**
@@ -175,11 +177,21 @@ var sendTopic = topicObj => {
 
     emitAll(JSON.stringify(sendObj));
 }
+
+var refreshTeacher = () => {
+    var sendObj = {
+        type : "REFRESH"
+    }
+
+    teaClient.send(JSON.stringify(sendObj));
+}
+
 module.exports = {
     sendSessionObj : sessionObj => {
         userObj = sessionObj;
     },
     sendTopic : sendTopic,
     sendTopicToUser :sendTopicToUser,
-    sendReply : sendReply
+    sendReply : sendReply,
+    refreshTeacher : refreshTeacher
 }
