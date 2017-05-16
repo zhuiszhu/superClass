@@ -335,6 +335,9 @@ header{
 .student-list ul li.reply .reply-box{
   display: block;
 }
+.student-list ul li.reply .reply-box:empty{
+  display: none;
+}
 .student-list .show-btn{
   display: block;
   border: 0 none;

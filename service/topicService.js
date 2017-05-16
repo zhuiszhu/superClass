@@ -8,7 +8,7 @@ var getSocketUser = require("../service/socketService");
 var state = require("./projectState.js");
 
 var topicService = {
-    insertTopic : (req , res) => {
+    insertTopic : (req , res) => {//讲师出题
         event.emit("GET_RES", res);
 
         var sendObj = {
@@ -85,7 +85,7 @@ var topicService = {
             res.json(sendObj);
         }
     },
-    replyTopic : (req , res) => {
+    replyTopic : (req , res) => {//学生答题
         event.emit("GET_RES", res);
         var sendObj = {
             aut : false
@@ -141,6 +141,20 @@ var topicService = {
             sendObj.txt = "验证失败,请登录后回答问题";
             res.json(sendObj);
         }
+    },
+    lookTopic : (req , res) => {//讲师开始审题
+        var sendObj = {
+            aut : false
+        };
+
+        if (req.session.userObj && req.session.userObj[0].type == 0){//讲师身份,可以更改审题状态
+            state.topicState = null;
+            sendObj.aut = true;
+        }else{
+            sendObj.txt = "身份验证失败!";
+        }
+            res.json(sendObj);
+
     }
 };
 

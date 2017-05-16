@@ -1,4 +1,3 @@
 module.exports = {
-    topicState : null,
-    studentList : []
+    topicState : null
 }

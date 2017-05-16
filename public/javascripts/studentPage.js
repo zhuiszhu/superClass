@@ -30,6 +30,7 @@ $(function () {
                 // receiveInfo(dataObj);
                 break;
             case "TOPIC":
+                console.log(dataObj);
                 topicDom.find(".topic-title").find("span").text(dataObj.content.title);
                 topicDom.find(".topic-content").find("p").text(dataObj.content.content);
                 $("#topic").attr("data-id",dataObj.content._id);

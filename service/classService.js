@@ -54,11 +54,12 @@ var classService = {
             //向socket服务器传送session用户信息
             SocketObj.sendSessionObj(userObj);
 
+                console.log(state.topicState);
+
             //获取读题状态,非空为回答题目期间
             if(state.topicState != null){
-
                 event.removeAllListeners("DB_OOP_SUCCESS");
-                event.on("DB_OOP_SUCCESS", data => {
+                event.once("DB_OOP_SUCCESS", data => {
                     var stt = data.info[0];
                     
                     if(!stt.state){//题目未回答过,给学生客户端提示

@@ -39,7 +39,6 @@ $(function () {
                 
                 break;
             case "REFRESH":
-                console.log("收到刷新动作了")
                 location.reload();
                 break;
         }
@@ -108,5 +107,13 @@ $(function () {
     $(".show-js-btn").click(function(){
         $(".answer").removeClass("answer");
         $(".inline").addClass("reply");
+
+        $.ajax({
+            url : "/ajax/lookTopic",
+            type : "get",
+            success : function(data){
+                console.log(data);
+            }
+        })
     });
 });

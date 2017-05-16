@@ -33,7 +33,12 @@ router.post('/insertTopic' , (req , res , next) => {
 //回答问题
 router.post('/replyTopic' , (req , res , next) => {
   topicService.replyTopic(req , res);
-})
+});
+
+//回答问题
+router.get('/lookTopic' , (req , res , next) => {
+  topicService.lookTopic(req , res);
+});
 
 
 module.exports = router;
