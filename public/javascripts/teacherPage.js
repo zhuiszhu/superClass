@@ -38,6 +38,10 @@ $(function () {
                 stuDom.addClass("answer");
                 
                 break;
+            case "REFRESH":
+                console.log("收到刷新动作了")
+                location.reload();
+                break;
         }
 
     }

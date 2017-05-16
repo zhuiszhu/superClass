@@ -2,6 +2,7 @@ var DB = require("../db/DBconnect.js");
 var db = new DB("users");
 var event = require("../functions/publicEvent");
 var jm = require("../functions/ecryption").pwd;
+var socketObj = require("./socketService.js");
 
 var userService = {
     indexPage: (req , res) => {
@@ -120,6 +121,9 @@ var userService = {
                     sendObj.aut = true;
                     sendObj.txt = "注册成功!";
                     res.json(sendObj);
+                    if(userObj.type == 1){//如果是学生注册,则刷新教师客户端
+                        socketObj.refreshTeacher();
+                    }
                 }
             });
 

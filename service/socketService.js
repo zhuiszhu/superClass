@@ -178,6 +178,9 @@ var sendTopic = topicObj => {
     emitAll(JSON.stringify(sendObj));
 }
 
+/**
+ * 通知教师端页面刷新
+ */
 var refreshTeacher = () => {
     var sendObj = {
         type : "REFRESH"
