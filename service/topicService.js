@@ -155,6 +155,28 @@ var topicService = {
         }
             res.json(sendObj);
 
+    },
+    getReplyCount: (req, res) => {//学生统计答题数
+        var sendObj = {
+            aut: false
+        };
+
+        if (req.session.userObj && req.session.userObj[0].type == 1) {
+            event.emit("GET_RES", res);
+            var userObj = req.session.userObj[0];
+            var uid = ObjectID(userObj._id);
+
+            event.removeAllListeners("DB_OOP_SUCCESS");
+            event.once("DB_OOP_SUCCESS" , data => {
+                sendObj.content = data.info;
+                sendObj.aut = true;
+                res.json(sendObj);
+            });
+            sTTDB.count({studentID : uid , state : true});
+        } else {
+            sendObj.txt = "请登录学员账号";
+            res.json(sendObj);
+        }
     }
 };
 

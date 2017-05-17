@@ -40,5 +40,12 @@ router.get('/lookTopic' , (req , res , next) => {
   topicService.lookTopic(req , res);
 });
 
+//回答问题
+router.get('/getReplyCount' , (req , res , next) => {
+  topicService.getReplyCount(req , res);
+});
+
+
+
 
 module.exports = router;

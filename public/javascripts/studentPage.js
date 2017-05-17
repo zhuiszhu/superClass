@@ -30,7 +30,6 @@ $(function () {
                 // receiveInfo(dataObj);
                 break;
             case "TOPIC":
-                console.log(dataObj);
                 topicDom.find(".topic-title").find("span").text(dataObj.content.title);
                 topicDom.find(".topic-content").find("p").text(dataObj.content.content);
                 $("#topic").attr("data-id",dataObj.content._id);
@@ -63,6 +62,8 @@ $(function () {
                         $(".topic-box").hide();
                         $("#topic").find("input.title").val("");
                         $("#topic").find("textarea").val("");
+                        //更新答题数
+                        updateReplyCount();
                     }else{
                         alert(data.txt);
                     }
@@ -82,4 +83,21 @@ $(function () {
     $(".topic-panel").find(".close-btn").click(function(){
         $(this).closest(".topic-box").hide();
     });
+
+    updateReplyCount();
+
+    function updateReplyCount(){
+
+        $.ajax({
+            url : "/ajax/getReplyCount",
+            type : "get",
+            success : function(data){
+                if(data.aut){
+                    $("#replyCount").text(data.content);
+                }else{
+                    alert(data.txt);
+                }
+            }
+        })
+    }
 });

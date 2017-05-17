@@ -44,7 +44,7 @@ function DBPool(collectionName) {//操作表构造函数
      * @param {object} data 需要查询的条件
      * @param {object} select 需要查询的字段
      */
-    this.find = (data , select) => {
+    this.find = (data, select) => {
         mClient.connect(DB_CONN_STR, (err, db) => {
             var eObj = {
                 collection: collectionName,
@@ -55,7 +55,7 @@ function DBPool(collectionName) {//操作表构造函数
                 event.emit("DB_CONN_ERROR", eObj);
             } else {
                 var users = db.collection(eObj.collection);
-                if(!select){
+                if (!select) {
                     users.find(data).toArray((err, dbData) => {
                         if (err) {
                             eObj.info = err;
@@ -65,8 +65,8 @@ function DBPool(collectionName) {//操作表构造函数
                             event.emit("DB_OOP_SUCCESS", eObj);
                         }
                     })
-                }else{
-                    users.find(data,select).toArray((err, dbData) => {
+                } else {
+                    users.find(data, select).toArray((err, dbData) => {
                         if (err) {
                             eObj.info = err;
                             event.emit("DB_OOP_ERROR", eObj);
@@ -82,7 +82,12 @@ function DBPool(collectionName) {//操作表构造函数
         })
     }
 
-    this.update = (select , updateObj ) => {
+    /**
+     * 更新数据.
+     * @param {object} select 需要查询的条件
+     * @param {object} updateObj 需要更新的字段 
+     */
+    this.update = (select, updateObj) => {
         mClient.connect(DB_CONN_STR, (err, db) => {
             var eObj = {
                 collection: collectionName,
@@ -93,7 +98,7 @@ function DBPool(collectionName) {//操作表构造函数
                 event.emit("DB_CONN_ERROR", eObj);
             } else {
                 var users = db.collection(eObj.collection);
-                users.update(select , {$set : updateObj} , (err , results) => {
+                users.update(select, { $set: updateObj }, (err, results) => {
                     if (err) {
                         eObj.info = err;
                         event.emit("DB_OOP_ERROR", eObj);
@@ -102,6 +107,38 @@ function DBPool(collectionName) {//操作表构造函数
                         event.emit("DB_OOP_SUCCESS", eObj);
                     }
                 })
+
+                db.close();
+            }
+        })
+    }
+
+    /**
+     * 计数
+     * @param {object} select 需要查询的条件
+     * @param {object} data 需要查询的字段
+     */
+    this.count = (select) => {
+        mClient.connect(DB_CONN_STR, (err, db) => {
+            var eObj = {
+                collection: collectionName,
+                oop: "count"
+            }
+            if (err) {
+                eObj.info = err;
+                event.emit("DB_CONN_ERROR", eObj);
+            } else {
+                var users = db.collection(eObj.collection);
+                users.count(select, (err, count) => {
+                    if (err) {
+                        eObj.info = err;
+                        event.emit("DB_OOP_ERROR", eObj);
+                    } else {
+                        eObj.info = count;
+                        event.emit("DB_OOP_SUCCESS", eObj);
+                    }
+
+                });
 
                 db.close();
             }
