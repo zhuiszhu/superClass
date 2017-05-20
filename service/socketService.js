@@ -182,11 +182,14 @@ var sendTopic = topicObj => {
  * 通知教师端页面刷新
  */
 var refreshTeacher = () => {
-    var sendObj = {
-        type : "REFRESH"
-    }
 
-    teaClient.send(JSON.stringify(sendObj));
+    if(teaClient){
+        var sendObj = {
+            type : "REFRESH"
+        }
+
+        teaClient.send(JSON.stringify(sendObj));
+    }
 }
 
 module.exports = {

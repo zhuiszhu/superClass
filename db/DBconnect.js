@@ -122,7 +122,8 @@ function DBPool(collectionName) {//操作表构造函数
         mClient.connect(DB_CONN_STR, (err, db) => {
             var eObj = {
                 collection: collectionName,
-                oop: "count"
+                oop: "count",
+                parameter : select
             }
             if (err) {
                 eObj.info = err;

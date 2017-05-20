@@ -1,5 +1,5 @@
 $(function () {
-    var ws = new WebSocket("ws://192.168.59.208:8000");
+    var ws = new WebSocket("ws://192.168.1.100:8000");
     var sktObj = {
         type: "CONNECT",
         code: 200

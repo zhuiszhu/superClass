@@ -40,9 +40,12 @@ router.get('/lookTopic' , (req , res , next) => {
   topicService.lookTopic(req , res);
 });
 
-//回答问题
-router.get('/getReplyCount' , (req , res , next) => {
-  topicService.getReplyCount(req , res);
+//获取学员相关信息 没有参数为获取全部信息,包括答题数,正确率,未答题数
+//单独获取答题数请传参数type=replyCount
+//单独获取正确率请传参数type=correctRate
+//单独获取未答题数,请传参数type=notReplyCount
+router.get('/getUserInfo' , (req , res , next) => {
+  topicService.getUserInfo(req , res);
 });
 
 

@@ -1,5 +1,5 @@
 $(function () {
-    var ws = new WebSocket("ws://192.168.59.208:8000");
+    var ws = new WebSocket("ws://192.168.1.100:8000");
     var topicDom = $(".topic-box");
     var formDom = $("#topic");
     var sktObj = {
@@ -84,16 +84,32 @@ $(function () {
         $(this).closest(".topic-box").hide();
     });
 
-    updateReplyCount();
+    updateReplyCount("all");
 
-    function updateReplyCount(){
+    function updateReplyCount(countType){
 
         $.ajax({
-            url : "/ajax/getReplyCount",
+            url : "/ajax/getUserInfo?type=" + countType,
             type : "get",
             success : function(data){
                 if(data.aut){
-                    $("#replyCount").text(data.content);
+                    if(data.type == "all"){
+                        $("#replyCount").text(data.data.replyCount);
+                        $("#notReplyCount").text(data.data.notReplyCount);
+                        var acc = (data.data.rightCount*1) / (data.data.rightCount*1 + data.data.errorCount*1) == 0 ? 1 : (data.data.rightCount*1 + data.data.errorCount*1);
+                        $("#accuracy").text(acc + "%");
+                    }else if(data.type == "replyCount"){
+                        $("#replyCount").text(data.data.replyCount);
+                    }else if(data.type == "notReplyCount"){
+                        $("#notReplyCount").text(data.data.notReplyCount);
+                    }else if(data.type == "errorCount"){
+                        console.log(data);
+
+                    }else if(data.type == "rightCount"){
+                        console.log(data);
+
+                    }
+                    
                 }else{
                     alert(data.txt);
                 }
