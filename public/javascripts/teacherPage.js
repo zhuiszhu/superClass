@@ -1,5 +1,5 @@
 $(function () {
-    var ws = new WebSocket("ws://192.168.1.100:8000");
+    var ws = new WebSocket("ws://" + location.hostname + ":8000");
     var sktObj = {
         type: "CONNECT",
         code: 200
@@ -24,8 +24,8 @@ $(function () {
                 // updateUserList(dataObj.content);//更新用户列表
                 var num = dataObj.content.length;
                 $(".student-list").find("li.inline").removeClass("inline");
-                dataObj.content.map(function(item){
-                    $(".student-list").find("li[data-id="+item._id+"]").addClass("inline");
+                dataObj.content.map(function (item) {
+                    $(".student-list").find("li[data-id=" + item._id + "]").addClass("inline");
                 })
                 $("#inlineNum").text(num);
                 break;
@@ -33,10 +33,10 @@ $(function () {
                 // receiveInfo(dataObj);
                 break;
             case "REPLY":
-                var stuDom = $(".student-list").find("li[data-id="+dataObj.content.studentID+"]");
+                var stuDom = $(".student-list").find("li[data-id=" + dataObj.content.studentID + "]");
                 stuDom.find(".reply-box").text(dataObj.content.replyContent);
                 stuDom.addClass("answer");
-                
+
                 break;
             case "REFRESH":
                 location.reload();
@@ -45,42 +45,42 @@ $(function () {
 
     }
 
-    $(".topic-panel").find(".close-btn").click(function(){
+    $(".topic-panel").find(".close-btn").click(function () {
         $(this).closest(".topic-box").hide();
     });
 
-    $(".pushTopic").click(function(){
+    $(".pushTopic").click(function () {
         $(".topic-box").show();
     })
 
-    $("#topic").submit(function(e){
+    $("#topic").submit(function (e) {
         e.preventDefault();
 
         var topicObj = {
-            title : this.topicTitle.value,
-            content : this.topicContent.value,
-            fraction : this.fraction.value
+            title: this.topicTitle.value,
+            content: this.topicContent.value,
+            fraction: this.fraction.value
         }
 
         topicObj.title = topicObj.title.trim();
         topicObj.content = topicObj.content.trim();
 
-        if(!topicObj.title){
+        if (!topicObj.title) {
             $(this.topicTitle).addClass("err");
-        }else if(!topicObj.content){
-            $(this.topicContent).addClass("err");            
-        }else{//标题和内容均有数据,允许提交
+        } else if (!topicObj.content) {
+            $(this.topicContent).addClass("err");
+        } else {//标题和内容均有数据,允许提交
             $.ajax({
-                url : "/ajax/insertTopic",
-                type : "post",
-                data : topicObj,
-                success : function(data){
-                    if(data.aut){
+                url: "/ajax/insertTopic",
+                type: "post",
+                data: topicObj,
+                success: function (data) {
+                    if (data.aut) {
                         // alert(data.txt);
                         $(".topic-box").hide();
                         $("#topic").find("input.title").val("");
                         $("#topic").find("textarea").val("");
-                    }else{
+                    } else {
                         alert(data.txt);
                     }
                 }
@@ -88,30 +88,30 @@ $(function () {
         }
     })
 
-    $("#topic").on("blur" , ".err" , function(){
+    $("#topic").on("blur", ".err", function () {
         // var value = $(this).value;
         var value = $.trim(this.value);
-        if(!!value){
+        if (!!value) {
             $(this).removeClass("err");
         }
     })
-    
-    $("#topic").find("input.fraction").on("blur" , function(){
-        var value = this.value*1;
-        
-        if(isNaN(value) || value == 0){
+
+    $("#topic").find("input.fraction").on("blur", function () {
+        var value = this.value * 1;
+
+        if (isNaN(value) || value == 0) {
             $(this).val(2);
         }
     })
 
-    $(".show-js-btn").click(function(){
+    $(".show-js-btn").click(function () {
         $(".answer").removeClass("answer");
         $(".inline").addClass("reply");
 
         $.ajax({
-            url : "/ajax/lookTopic",
-            type : "get",
-            success : function(data){
+            url: "/ajax/lookTopic",
+            type: "get",
+            success: function (data) {
                 console.log(data);
             }
         })
