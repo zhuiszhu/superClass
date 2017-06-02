@@ -1,16 +1,18 @@
+var sendErr = require("../functions/resErr.js").sendErr;
 var DB = require("../db/DBconnect.js");
 var db = new DB("users");
 var event = require("../functions/publicEvent");
 var jm = require("../functions/ecryption").pwd;
 var socketObj = require("./socketService.js");
+var dbCon = require("../functions/projectConfig").db;
 
 var userService = {
-    indexPage: (req , res) => {
-        if(req.session.userObj && req.session.userObj[0].type == 0){
+    indexPage: (req, res) => {
+        if (req.session.userObj && req.session.userObj[0].type == 0) {
             res.redirect("/teacher");
-        }else if(req.session.userObj && req.session.userObj[0].type == 1){
-            res.redirect("/student");            
-        }else{
+        } else if (req.session.userObj && req.session.userObj[0].type == 1) {
+            res.redirect("/student");
+        } else {
             res.redirect("/users/login");
         }
     },
@@ -42,8 +44,7 @@ var userService = {
             sendObj.aut = false;
             userObj.password = jm(userObj.password);//加密密码
 
-            event.removeAllListeners("DB_OOP_SUCCESS");
-            event.once("DB_OOP_SUCCESS", data => {
+            db.find(userObj).then(function (data) {
                 var usr = data.info;
                 if (usr.length == 0) {//用户名密码不正确
                     sendObj.txt = "用户名密码不正确,请重新输入";
@@ -54,9 +55,9 @@ var userService = {
                     req.session.userObj = usr;
                 }
                 res.json(sendObj);
+            }, function (err) {
+                // sendErr(err, res, sendObj);
             });
-
-            db.find(userObj);
         }
     },
     registerPage: (req, res) => {//注册页面
@@ -73,7 +74,7 @@ var userService = {
             aut: false
         }
         userObj.username = userObj.username.trim();
-        userObj.class = userObj.class.trim();       
+        userObj.class = userObj.class.trim();
 
         //验证数据是否合法
         if (!testName(userObj.username)) {
@@ -98,37 +99,40 @@ var userService = {
             //数据库操作成功
             event.removeAllListeners("DB_OOP_SUCCESS");
             event.on("DB_OOP_SUCCESS", data => {
-                var usr = null;
-                if (data.oop == "find") {//查询成功
-                    usr = data.info;
-                    if (usr.length == 0) {//用户名不存在,可用
 
-                        /**
-                         * 注册各种操作
-                         */
-
-                        userObj.password = jm(userObj.password);
-                        userObj.date = new Date();
-                        userObj.friends = [];
-
-                        db.insert(userObj);//开始注册
-
-                    } else {//用户名已存在,返回结果
-                        sendObj.txt = "用户名已存在";
-                        res.json(sendObj);
-                    }
-                } else if (data.oop == "insert") {//注册成功
-                    sendObj.aut = true;
-                    sendObj.txt = "注册成功!";
-                    res.json(sendObj);
-                    if(userObj.type == 1){//如果是学生注册,则刷新教师客户端
-                        socketObj.refreshTeacher();
-                    }
-                }
             });
 
-            db.find({ username: userObj.username });
+            db.find({ username: userObj.username }).then(data => {
+                var usr = null;
+                usr = data.info;
+                if (usr.length == 0) {//用户名不存在,可用
 
+                    /**
+                     * 注册各种操作
+                     */
+
+                    userObj.password = jm(userObj.password);
+                    userObj.date = new Date();
+                    userObj.friends = [];
+
+                    db.insert(userObj).then(data => {
+                        sendObj.aut = true;
+                        sendObj.txt = "注册成功!";
+                        res.json(sendObj);
+                        if (userObj.type == 1) {//如果是学生注册,则刷新教师客户端
+                            socketObj.refreshTeacher();
+                        }
+                    }, err => {
+                        // sendErr(err, res, sendObj);
+                    });//开始注册
+
+                } else {//用户名已存在,返回结果
+                    sendObj.txt = "用户名已存在";
+                    res.json(sendObj);
+                }
+            }, err => {
+                // sendErr(err, res, sendObj);
+            });
         }
     },
     findUser: (req, res) => {//用户名验证
@@ -142,8 +146,7 @@ var userService = {
             res.json(sendObj);
         } else {//用户名合法
 
-            event.removeAllListeners("DB_OOP_SUCCESS");
-            event.on("DB_OOP_SUCCESS", data => {//查询成功
+            db.find({ username: username }).then(data => {
                 var usr = data.info;
                 sendObj.aut = true;
 
@@ -157,21 +160,21 @@ var userService = {
                 }
 
                 res.json(sendObj);
-            });
 
-            db.find({ username: username });
+            }, err => {
+                // sendErr(err , res , sendObj);
+            });
         }
 
     },
-    findClass: (req , res) => {//查询班级
+    findClass: (req, res) => {//查询班级
         event.emit("GET_RES", res);
 
-        event.removeAllListeners("DB_OOP_SUCCESS");
-            event.on("DB_OOP_SUCCESS", data => {//查询成功
-                res.json(data.info);
-            });
-
-            db.find({ type: "0" },{class:1 , _id : 0});
+        db.find({ type: "0" }, { class: 1, _id: 0 }).then(data => {
+            res.json(data.info);
+        } , err => {
+                // sendErr(err , res , sendObj);            
+        });
     }
 };
 

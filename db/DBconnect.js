@@ -13,30 +13,39 @@ function DBPool(collectionName) {//操作表构造函数
      */
     this.insert = data => {
         var thisObj = this;
-        mClient.connect(DB_CONN_STR, (err, db) => {
-            var eObj = {
-                collection: collectionName,
-                oop: "insert"
-            }
-            if (err) {
-                eObj.info = err;
-                event.emit("DB_CONN_ERROR", eObj);
-            } else {
-                var coll = db.collection(eObj.collection);
 
-                coll.insert(data, (err, results) => {
-                    if (err) {
-                        eObj.info = err;
-                        event.emit("DB_OOP_ERROR", eObj);
-                    } else {
-                        eObj.info = results;
-                        event.emit("DB_OOP_SUCCESS", eObj);
-                    }
-                })
+        var pro = new Promise((resolve, reject) => {
 
-                db.close();
-            }
-        })
+            mClient.connect(DB_CONN_STR, (err, db) => {
+                var eObj = {
+                    collection: collectionName,
+                    oop: "insert"
+                }
+                if (err) {
+                    eObj.info = err;
+                    reject(eObj);
+                    event.emit("DB_CONN_ERROR", eObj);
+                } else {
+                    var coll = db.collection(eObj.collection);
+
+                    coll.insert(data, (err, results) => {
+                        if (err) {
+                            eObj.info = err;
+                            reject(eObj);
+                            event.emit("DB_OOP_ERROR", eObj);
+                        } else {
+                            eObj.info = results;
+                            resolve(eObj);
+                            event.emit("DB_OOP_SUCCESS", eObj);
+                        }
+                    })
+
+                    db.close();
+                }
+            })
+        });
+
+        return pro;
     }
 
     /**
@@ -45,41 +54,51 @@ function DBPool(collectionName) {//操作表构造函数
      * @param {object} select 需要查询的字段
      */
     this.find = (data, select) => {
-        mClient.connect(DB_CONN_STR, (err, db) => {
-            var eObj = {
-                collection: collectionName,
-                oop: "find"
-            }
-            if (err) {
-                eObj.info = err;
-                event.emit("DB_CONN_ERROR", eObj);
-            } else {
-                var users = db.collection(eObj.collection);
-                if (!select) {
-                    users.find(data).toArray((err, dbData) => {
-                        if (err) {
-                            eObj.info = err;
-                            event.emit("DB_OOP_ERROR", eObj);
-                        } else {
-                            eObj.info = dbData;
-                            event.emit("DB_OOP_SUCCESS", eObj);
-                        }
-                    })
-                } else {
-                    users.find(data, select).toArray((err, dbData) => {
-                        if (err) {
-                            eObj.info = err;
-                            event.emit("DB_OOP_ERROR", eObj);
-                        } else {
-                            eObj.info = dbData;
-                            event.emit("DB_OOP_SUCCESS", eObj);
-                        }
-                    })
+        var pro = new Promise((resolve, reject) => {
+            mClient.connect(DB_CONN_STR, (err, db) => {
+                var eObj = {
+                    collection: collectionName,
+                    oop: "find"
                 }
+                if (err) {
+                    eObj.info = err;
+                    reject(eObj);
+                    event.emit("DB_CONN_ERROR", eObj);
+                } else {
+                    var users = db.collection(eObj.collection);
+                    if (!select) {
+                        users.find(data).toArray((err, dbData) => {
+                            if (err) {
+                                eObj.info = err;
+                                reject(eObj);
 
-                db.close();
-            }
-        })
+                                event.emit("DB_OOP_ERROR", eObj);
+                            } else {
+                                eObj.info = dbData;
+                                resolve(eObj);
+                                event.emit("DB_OOP_SUCCESS", eObj);
+                            }
+                        })
+                    } else {
+                        users.find(data, select).toArray((err, dbData) => {
+                            if (err) {
+                                eObj.info = err;
+                                reject(eObj);
+                                event.emit("DB_OOP_ERROR", eObj);
+                            } else {
+                                eObj.info = dbData;
+                                resolve(eObj);
+                                event.emit("DB_OOP_SUCCESS", eObj);
+                            }
+                        })
+                    }
+
+                    db.close();
+                }
+            })
+
+        });
+        return pro;
     }
 
     /**
@@ -88,29 +107,36 @@ function DBPool(collectionName) {//操作表构造函数
      * @param {object} updateObj 需要更新的字段 
      */
     this.update = (select, updateObj) => {
-        mClient.connect(DB_CONN_STR, (err, db) => {
-            var eObj = {
-                collection: collectionName,
-                oop: "update"
-            }
-            if (err) {
-                eObj.info = err;
-                event.emit("DB_CONN_ERROR", eObj);
-            } else {
-                var users = db.collection(eObj.collection);
-                users.update(select, { $set: updateObj }, (err, results) => {
-                    if (err) {
-                        eObj.info = err;
-                        event.emit("DB_OOP_ERROR", eObj);
-                    } else {
-                        eObj.info = results;
-                        event.emit("DB_OOP_SUCCESS", eObj);
-                    }
-                })
+        var pro = new Promise((suc, err) => {
 
-                db.close();
-            }
-        })
+            mClient.connect(DB_CONN_STR, (err, db) => {
+                var eObj = {
+                    collection: collectionName,
+                    oop: "update"
+                }
+                if (err) {
+                    eObj.info = err;
+                    err(eObj);
+                    event.emit("DB_CONN_ERROR", eObj);
+                } else {
+                    var users = db.collection(eObj.collection);
+                    users.update(select, { $set: updateObj }, (err, results) => {
+                        if (err) {
+                            eObj.info = err;
+                            err(eObj);
+                            event.emit("DB_OOP_ERROR", eObj);
+                        } else {
+                            eObj.info = results;
+                            suc(eObj);
+                            event.emit("DB_OOP_SUCCESS", eObj);
+                        }
+                    })
+
+                    db.close();
+                }
+            })
+        });
+        return pro;
     }
 
     /**
@@ -119,31 +145,38 @@ function DBPool(collectionName) {//操作表构造函数
      * @param {object} data 需要查询的字段
      */
     this.count = (select) => {
-        mClient.connect(DB_CONN_STR, (err, db) => {
-            var eObj = {
-                collection: collectionName,
-                oop: "count",
-                parameter : select
-            }
-            if (err) {
-                eObj.info = err;
-                event.emit("DB_CONN_ERROR", eObj);
-            } else {
-                var users = db.collection(eObj.collection);
-                users.count(select, (err, count) => {
-                    if (err) {
-                        eObj.info = err;
-                        event.emit("DB_OOP_ERROR", eObj);
-                    } else {
-                        eObj.info = count;
-                        event.emit("DB_OOP_SUCCESS", eObj);
-                    }
+        var pro = new Promise((suc, err) => {
 
-                });
+            mClient.connect(DB_CONN_STR, (err, db) => {
+                var eObj = {
+                    collection: collectionName,
+                    oop: "count",
+                    parameter: select
+                }
+                if (err) {
+                    eObj.info = err;
+                    err(eObj);
+                    event.emit("DB_CONN_ERROR", eObj);
+                } else {
+                    var users = db.collection(eObj.collection);
+                    users.count(select, (err, count) => {
+                        if (err) {
+                            eObj.info = err;
+                            err(eObj);
+                            event.emit("DB_OOP_ERROR", eObj);
+                        } else {
+                            eObj.info = count;
+                            suc(eObj);
+                            event.emit("DB_OOP_SUCCESS", eObj);
+                        }
 
-                db.close();
-            }
-        })
+                    });
+
+                    db.close();
+                }
+            })
+        });
+        return pro;
     }
 }
 

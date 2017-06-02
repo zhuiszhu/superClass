@@ -1,3 +1,4 @@
+var sendErr = require("../functions/resErr.js").sendErr;
 var DBCon = require("../db/DBconnect.js");
 var ObjectID = require("objectid");
 var userDB = new DBCon("users");
@@ -40,16 +41,9 @@ var topicService = {
                     topicObj.fraction = 2;
                 }
 
-                event.removeAllListeners("DB_OOP_SUCCESS");
-                event.on("DB_OOP_SUCCESS", data => {
-
-                    if (data.collection == "topic" && data.oop == "insert") {//对题目表的插入操作成功
-
-                        topicID = data.info.insertedIds[0];
-
-                        userDB.find({ class: userObj.class, type: "1" }, { _id: 1 });
-
-                    } else if (data.collection == "users" && data.oop == "find") {//对用户列表的查询操作成功
+                topicDB.insert(topicObj).then(data => {
+                    topicID = data.info.insertedIds[0];
+                    userDB.find({ class: userObj.class, type: "1" }, { _id: 1 }).then(data => {
                         // console.log(data.info);
                         var userList = data.info;
                         if (topicID != null) {//题目添加成功了才能添加关系表内容
@@ -67,18 +61,23 @@ var topicService = {
                                     replyContent: null
                                 }
                             });
-                            sTTDB.insert(dataList);
-                        }
-                    } else if (data.collection == "studentToTopic" && data.oop == "insert") {//学员题目关系表数据插入成功
-                        sendObj.aut = true;
-                        sendObj.txt = "添加成功";
-                        res.json(sendObj);
-                        getSocketUser.sendTopic(topicObj);//向学员发送数据
-                        state.topicState = topicObj;//提问状态管理
-                    }
-                });
+                            sTTDB.insert(dataList).then(data => {
+                                sendObj.aut = true;
+                                sendObj.txt = "添加成功";
+                                res.json(sendObj);
+                                getSocketUser.sendTopic(topicObj);//向学员发送数据
+                                state.topicState = topicObj;//提问状态管理
+                            }, err => {
+                                // sendErr(err, res, sendObj);
 
-                topicDB.insert(topicObj);
+                            });
+                        }
+                    }, err => {
+                        // sendErr(err, res, sendObj);
+                    });
+                }, err => {
+                    // sendErr(err, res, sendObj);
+                });
             }
 
         } else {
@@ -104,37 +103,35 @@ var topicService = {
                 var tid = ObjectID(topicObj.topicId);
                 var uid = ObjectID(userObj._id);
 
-                event.removeAllListeners("DB_OOP_SUCCESS");
-                event.on("DB_OOP_SUCCESS", data => {
-                    if (data.collection == "studentToTopic" && data.oop == "find") {//查询该题
-                        var sttObj = data.info[0];
+                sTTDB.find({ studentID: uid, topicID: tid }).then(data => {
+                    var sttObj = data.info[0];
 
-                        if (data.info.length != 0) {
-                            if (sttObj.state) {//将答题后的状态发送给讲师
-                                getSocketUser.sendReply(sttObj);
+                    if (data.info.length != 0) {
+                        var sttId = data.info[0]._id;
+                        sTTDB.update({ _id: sttId }, { replyTime: new Date(), state: true, replyContent: topicObj.content }).then(data => {
+                            if (data.info.result.n >= 1) {//更新成功
+                                sendObj.aut = true;
+                                sendObj.txt = "提交成功!";
+                                sTTDB.find({ studentID: uid, topicID: tid }).then(data => {
+
+                                    getSocketUser.sendReply(data.info[0]);
+                                });
                             } else {
-                                var sttId = data.info[0]._id;
-                                sTTDB.update({ _id: sttId }, { replyTime: new Date(), state: true, replyContent: topicObj.content });
+                                sendObj.aut = false;
+                                sendObj.txt = "数据更新失败!请联系管理员";
                             }
-                        } else {
-                            sendObj.txt = "您未被添加该题目!";
                             res.json(sendObj);
-                        }
-                    } else if (data.collection == "studentToTopic" && data.oop == "update") {//更新成功
+                        }, err => {
+                            // sendErr(err, res, sendObj);
 
-                        if (data.info.result.n >= 1) {//更新成功
-                            sendObj.aut = true;
-                            sendObj.txt = "提交成功!";
-                            sTTDB.find({ studentID: uid, topicID: tid });
-                        } else {
-                            sendObj.aut = false;
-                            sendObj.txt = "数据更新失败!请联系管理员";
-                        }
+                        });
+                    } else {
+                        sendObj.txt = "您未被添加该题目!";
                         res.json(sendObj);
                     }
+                }, err => {
+                    // sendErr(err, res, sendObj);
                 });
-
-                sTTDB.find({ studentID: uid, topicID: tid });
 
             }
         } else {
@@ -156,11 +153,10 @@ var topicService = {
         res.json(sendObj);
 
     },
-    getUserInfo: (req, res) => {//学生统计答题数
+    getUserInfo: (req, res) => {//获取学员答题信息
         var sendObj = {
             aut: false
         };
-        event.emit("GET_RES", res);
 
         if (req.session.userObj && req.session.userObj[0].type == 1) {
 
@@ -216,58 +212,51 @@ var topicService = {
                     }
                 });
 
-                event.removeAllListeners("DB_OOP_SUCCESS");
-                event.on("DB_OOP_SUCCESS", data => {
-
-                    if (data.oop == "count" && data.parameter.state === true) {//答题数
-                        rcCB(null, { type: "replyCount", content: data.info });
-                    } else if (data.oop == "count" && data.parameter.state === false) {//未答题数
-                        nrcCB(null, { type: "notReplyCount", content: data.info });
-                    } else if (data.oop == "count" && data.parameter.result == -1) {//回答错误答题数
-                        cCB(null, { type: "errorCount", content: data.info });
-                    } else if (data.oop == "count" && data.parameter.result == 1) {//正确答题数
-                        rCB(null, { type: "rightCount", content: data.info });
-                    }
+                sTTDB.count({ studentID: uid, state: true }).then(data => {
+                    rcCB(null, { type: "replyCount", content: data.info });
+                }, err => {
+                    // sendErr(err, res, sendObj);
+                });
+                sTTDB.count({ studentID: uid, state: false }).then(data => {
+                    nrcCB(null, { type: "notReplyCount", content: data.info });
+                });
+                sTTDB.count({ studentID: uid, result: -1 }).then(data => {
+                    cCB(null, { type: "errorCount", content: data.info });
+                });
+                sTTDB.count({ studentID: uid, result: 1 }).then(data => {
+                    rCB(null, { type: "rightCount", content: data.info });
                 });
 
-                sTTDB.count({ studentID: uid, state: true });
-                sTTDB.count({ studentID: uid, state: false });
-                sTTDB.count({ studentID: uid, result: -1 });
-                sTTDB.count({ studentID: uid, result: 1 });
-                // sendObj.content = data.info;
-                // sendObj.aut = true;
-                // res.json(sendObj);
             } else if (type == "replyCount") {//获取答题数
-                event.removeAllListeners("DB_OOP_SUCCESS");
-                event.on("DB_OOP_SUCCESS", data => {
+                sTTDB.count({ studentID: uid, state: true }).then(data => {
                     sendObj.aut = true;
                     sendObj.content = data.info;
                     sendObj.type = type;
                     res.json(sendObj);
+                }, err => {
+                    // sendErr(err, res, sendObj);                    
                 });
-
-                sTTDB.count({ studentID: uid, state: true });
             } else if (type == "notReplyCount") {//获取未答题的数量
-                event.removeAllListeners("DB_OOP_SUCCESS");
-                event.on("DB_OOP_SUCCESS", data => {
+
+                sTTDB.count({ studentID: uid, state: false }).then(data => {
                     sendObj.aut = true;
                     sendObj.content = data.info;
                     sendObj.type = type;
                     res.json(sendObj);
+                }, err => {
+                    // sendErr(err, res, sendObj);                    
                 });
-
-                sTTDB.count({ studentID: uid, state: false });
             } else if (type == "Accuracy") {//获取答题正确率
 
                 async.parallel([
-                    function (callback){
+                    function (callback) {
                         cCB = callback;
                     },
-                    function (callback){
-                        rCB = callback;                        
+                    function (callback) {
+                        rCB = callback;
                     }
-                    
-                ],function(err , results){
+
+                ], function (err, results) {
                     if (!err) {
                         var dataObj = {};
 
@@ -285,28 +274,42 @@ var topicService = {
                     }
                 });
 
-                event.removeAllListeners("DB_OOP_SUCCESS");
-                event.on("DB_OOP_SUCCESS", data => {
-
-                    if(data.oop == "count" && data.parameter.result == -1){
-                        cCB(null , {type : "errorCount" , content : data.info});
-                    }else if(data.oop == "count" && data.parameter.result == 1){
-                        rCB(null , {type : "rightCount" , content : data.info});                        
-                    }
-                    sendObj.aut = true;
-                    sendObj.content = data.info;
-                    sendObj.type = type;
-                    res.json(sendObj);
-
-
+                sTTDB.count({ studentID: uid, result: -1 }).then(data => {
+                    cCB(null, { type: "errorCount", content: data.info });
                 });
 
-                sTTDB.count({ studentID: uid, result: -1 });
-                sTTDB.count({ studentID: uid, result: 1 });
+                sTTDB.count({ studentID: uid, result: 1 }).then(data => {
+                    rCB(null, { type: "rightCount", content: data.info });
+                });
             }
 
         } else {
             sendObj.txt = "请登录学员账号";
+            res.json(sendObj);
+        }
+    },
+    markTopic: (req, res) => {//讲师批改题目
+        var sendObj = {
+            aut: false
+        };
+
+        if (req.session.userObj && req.session.userObj[0].type == 1) {
+            event.emit("GET_RES", res);
+
+            var topicObj = req.query;
+            var sttID = ObjectID(topicObj.STTID);
+
+            sTTDB.update({ _id: sttID }, { result: topicObj.result }).then(data => {
+                if (data.info.result.n >= 1) {
+                    sendObj.aut = true;
+                } else {
+                    sendObj.txt = "答题失败,请联系管理员";
+                }
+
+                res.json(sendObj);
+            });
+        } else {
+            sendObj.txt = "请登录讲师账号";
             res.json(sendObj);
         }
     }

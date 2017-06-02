@@ -36,7 +36,7 @@ $(function () {
                 var stuDom = $(".student-list").find("li[data-id=" + dataObj.content.studentID + "]");
                 stuDom.find(".reply-box").text(dataObj.content.replyContent);
                 stuDom.addClass("answer");
-
+                console.log(dataObj);
                 break;
             case "REFRESH":
                 location.reload();

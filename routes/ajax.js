@@ -48,6 +48,11 @@ router.get('/getUserInfo' , (req , res , next) => {
   topicService.getUserInfo(req , res);
 });
 
+//讲师批改试题
+router.get('/markTopic' , (req , res , next) => {
+  topicService.getUserInfo(req , res);
+});
+
 
 
 
